@@ -1,0 +1,3 @@
+
+#  @Advt2024r_bot.
+TOKEN = '7492868065:AAHWEDIXDtemTtxLZtDknYFmivKK8x_7EUw'
