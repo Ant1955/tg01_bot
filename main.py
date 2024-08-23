@@ -11,14 +11,19 @@ import requests
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
+global count
+count = 0
+
 def get_weather(city):
-   api_key = "fda902a077e24b262b0187ca6bc24204"
+    global count
+    api_key = "fda902a077e24b262b0187ca6bc24204"
    #адрес, по которомы мы будем отправлять запрос. Не забываем указывать f строку.
-   url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric"
+    url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric"
    #для получения результата нам понадобится модуль requests
-   response = requests.get(url)
+    count += 1
+    response = requests.get(url)
    #прописываем формат возврата результата
-   return response.json()
+    return response.json()
 
 
 @dp.message(CommandStart())
@@ -34,6 +39,7 @@ async def aitext(message: Message):
     await message.answer('Искусственный интеллект — это свойство искусственных интеллектов')
 @dp.message(Command('weather'))
 async def weather_get(message: Message):
+    global count
     sentence = message.text.lower()
     words = sentence.split()
     if len(words) >= 2:
@@ -58,7 +64,7 @@ async def weather_get(message: Message):
         await message.answer("Не удалось получить данные о погоде. Попробуйте еще раз.")
     except Exception as e:
         print(f"Unexpected error: {e}")
-        print(f"{city}")
+        print(f"{city} счетчик {count}")
         await message.answer("Произошла ошибка. Попробуйте еще раз.")
 #Прописываем хендлер и варианты ответов:
 
