@@ -10,6 +10,7 @@ from gtts import gTTS
 import os
 from googletrans import Translator
 
+
   #  @Advt2024r_bot.
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
@@ -94,8 +95,13 @@ async def training(message: Message):
 @dp.message()
 async def start(message: Message):
     translator = Translator()
-    translation = translator.translate(message.text, src='ru', dest='en')
-    await message.answer(f"Перевод: {translation}")
+    try:
+        # Перевод текста
+        translation = translator.translate(message.text, src='ru', dest='en')
+        await message.answer(f"Перевод: {translation.text}")
+    except Exception as e:
+        print(f"ошибка {e}")
+        await message.answer("Произошла ошибка при переводе.")
 
 
 async def main():
