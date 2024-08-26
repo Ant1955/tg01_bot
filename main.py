@@ -67,14 +67,14 @@ async def age(message: Message, state: FSMContext):
 
 @dp.message(Form.grade)
 async def grade(message: Message, state:FSMContext):
-    await state.update_data(city=message.text)
+    await state.update_data(grade=message.text)
 
     user_data = await state.get_data()
 
-    conn = sqlite3.connect('user_data.db')
+    conn = sqlite3.connect('school_data.db')
     cur = conn.cursor()
     cur.execute('''
-    INSERT INTO users (name, age, grade) VALUES (?, ?, ?)''', (user_data['name'], user_data['age'], user_data['city']))
+    INSERT INTO users (name, age, grade) VALUES (?, ?, ?)''', (user_data['name'], user_data['age'], user_data['grade']))
     conn.commit()
     conn.close()
     await state.clear()
