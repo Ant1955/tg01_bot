@@ -36,17 +36,17 @@ logging.basicConfig(level=logging.INFO)
 class Form(StatesGroup):
     name = State()
     age = State()
-    city = State()
+    grade = State()
 
 def init_db():
-    conn = sqlite3.connect('user_data.db')
+    conn = sqlite3.connect('school_data.db')
     cur = conn.cursor()
     cur.execute('''
 	CREATE TABLE IF NOT EXISTS users (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	name TEXT NOT NULL,
 	age INTEGER NOT NULL,
-	city TEXT NOT NULL)
+	grade TEXT NOT NULL)
 	''')
     conn.commit()
     conn.close()
@@ -62,11 +62,11 @@ async def name(message: Message, state: FSMContext):
 @dp.message(Form.age)
 async def age(message: Message, state: FSMContext):
     await state.update_data(age=message.text)
-    await message.answer("Из какого ты города?")
-    await state.set_state(Form.city)
+    await message.answer("В каком ты классе (на каком курсе)?")
+    await state.set_state(Form.grade)
 
-@dp.message(Form.city)
-async def city(message: Message, state:FSMContext):
+@dp.message(Form.grade)
+async def grade(message: Message, state:FSMContext):
     await state.update_data(city=message.text)
 
     user_data = await state.get_data()
@@ -74,28 +74,24 @@ async def city(message: Message, state:FSMContext):
     conn = sqlite3.connect('user_data.db')
     cur = conn.cursor()
     cur.execute('''
-    INSERT INTO users (name, age, city) VALUES (?, ?, ?)''', (user_data['name'], user_data['age'], user_data['city']))
+    INSERT INTO users (name, age, grade) VALUES (?, ?, ?)''', (user_data['name'], user_data['age'], user_data['city']))
     conn.commit()
     conn.close()
-
-    async with aiohttp.ClientSession() as session:
-        async with session.get(
-                f"http://api.openweathermap.org/data/2.5/weather?q={user_data['city']}&appid={WEATHER_API_KEY}&units=metric") as response:
-            if response.status == 200:
-                weather_data = await response.json()
-                main = weather_data['main']
-                weather = weather_data['weather'][0]
-                temperature = main['temp']
-                humidity = main['humidity']
-                description = weather['description']
-                weather_report = (f"Город - {user_data['city']}\\n"
-                              f"Температура - {temperature}\\n"
-                              f"Влажность воздуха - {humidity}\\n"
-                              f"Описание погоды - {description}")
-                await message.answer(weather_report)
-            else:
-                await message.answer("Не удалось получить данные о погоде")
     await state.clear()
+
+
+@dp.message(Command('dblist'))
+async def dblist(message: Message):
+    conn = sqlite3.connect('school_data.db')
+    cur = conn.cursor()
+    cur.execute('SELECT name, age, grade FROM users')
+    students = cur.fetchall()
+    conn.close()
+    if students:
+        students_list = "\n".join([f"Name: {name}, Age: {age}, Grade: {grade}" for name, age, grade in students])
+    else:
+        students_list = "No students found."
+    await message.answer(f"Список учеников (студентов)\n {students_list}")
 
 
 def get_weather(city):
@@ -117,9 +113,6 @@ async def start(message: Message, state: FSMContext):
 async def help(message: Message):
     await message.answer("Этот бот умеет выполнять команды:\n/start\n/help\n/weather [город]")
 
-@dp.message(F.text == "что такое ИИ?")
-async def aitext(message: Message):
-    await message.answer('Искусственный интеллект — это свойство искусственных интеллектов')
 @dp.message(Command('weather'))
 async def weather_get(message: Message):
     sentence = message.text.lower()
