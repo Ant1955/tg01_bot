@@ -2,10 +2,6 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMar
 
 from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
 
-main = ReplyKeyboardMarkup(keyboard=[
-   [KeyboardButton(text="Тестовая кнопка 1")],
-   [KeyboardButton(text="Тестовая кнопка 2"), KeyboardButton(text="Тестовая кнопка 3")]
-], resize_keyboard=True)
 
 inline_keyboard_more = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text="Показать больше", callback_data='showmore' )]
@@ -20,6 +16,7 @@ inline_keyboard_links = InlineKeyboardMarkup(inline_keyboard=[
 startkb = ReplyKeyboardMarkup(keyboard=[
    [KeyboardButton(text="Привет"), KeyboardButton(text="Пока")]
 ], resize_keyboard=True)
+
 
 test = ["Опция 1", "Опция 2"]
 
