@@ -3,7 +3,7 @@ import requests
 from aiogram import Bot, Dispatcher
 from aiogram.filters import Command
 from aiogram.types import Message
-import json
+from googletrans import Translator
 
 from config import TOKEN, OK_DESK, api_key_q
 
@@ -37,6 +37,7 @@ async def start_command(message: Message):
 
 @dp.message()
 async def send_case_info(message: Message):
+    translator = Translator()
     case = int(message.text)
     case_info = get_okdesk_case(case)
     if case_info and not 'errors' in case_info:
@@ -55,7 +56,8 @@ async def send_case_info(message: Message):
         await message.answer("кейс не найден. Попробуйте еще раз.")
     try:
         quote = det_quotes()
-        await message.answer(f"Кстати: {quote['quote']['body']} \n Автор {quote['quote']['author']}")
+        translation = translator.translate(quote['quote']['body'], src='en', dest='ru')
+        await message.answer(f"Кстати: {translation.text} \n Автор {quote['quote']['author']}")
     except:
         await message.answer("Цитаты не будет")
 
