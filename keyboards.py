@@ -7,21 +7,25 @@ main = ReplyKeyboardMarkup(keyboard=[
    [KeyboardButton(text="Тестовая кнопка 2"), KeyboardButton(text="Тестовая кнопка 3")]
 ], resize_keyboard=True)
 
+inline_keyboard_more = InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text="Показать больше", callback_data='showmore' )]
+])
+
 inline_keyboard_links = InlineKeyboardMarkup(inline_keyboard=[
-   [InlineKeyboardButton(text="Ноыости", callback_data='news')],
-   [InlineKeyboardButton(text="Музыка", callback_data='music')],
-   [InlineKeyboardButton(text="Видео", callback_data='video')]
+    [InlineKeyboardButton(text="Новости", url="https://hi-tech.mail.ru/"),
+    InlineKeyboardButton(text="Музыка", url='https://telesco.pe/freakingart/1746'),
+    InlineKeyboardButton(text="Видео", url='https://rutube.ru/video/be689a7178c25a1df1e335a0070698db/')]
 ])
 
 startkb = ReplyKeyboardMarkup(keyboard=[
-   [KeyboardButton(text="Привет")],
-   [KeyboardButton(text="Пока")]
+   [KeyboardButton(text="Привет"), KeyboardButton(text="Пока")]
 ], resize_keyboard=True)
 
-test = ["кнопка 1", "кнопка 2", "кнопка 3", "кнопка 4"]
+test = ["Опция 1", "Опция 2"]
+
 
 async def test_keyboard():
-   keyboard = InlineKeyboardBuilder()
-   for key in test:
-       keyboard.add(InlineKeyboardButton(text=key, url='https://www.youtube.com/watch?v=HfaIcB4Ogxk'))
-   return keyboard.adjust(2).as_markup()
+    keyboard = InlineKeyboardBuilder()
+    for key in test:
+        keyboard.add(InlineKeyboardButton(text=key, url='https://www.youtube.com/watch?v=HfaIcB4Ogxk'))
+    return keyboard.adjust(2).as_markup()

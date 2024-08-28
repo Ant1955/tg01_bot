@@ -13,14 +13,16 @@ import keyboards as kb
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
-@dp.callback_query(F.data == 'news')
+@dp.callback_query(F.data == 'showmore')
 async def news(callback: CallbackQuery):
-   await callback.answer("Новости подгружаются", show_alert=True)
-   await callback.message.edit_text('Вот свежие новости!', reply_markup=await kb.test_keyboard())
+   await callback.message.edit_text('Два варианта', reply_markup=await kb.test_keyboard())
+@dp.message(Command("dynamic"))
+async def dynamic(message: Message):
+    await message.answer('Динамик', reply_markup=kb.inline_keyboard_more)
+@dp.message(Command("links"))
+async def links(message: Message):
+    await message.answer('Вот эти', reply_markup=kb.inline_keyboard_links)
 
-@dp.callback_query(F.data == 'links')
-async def links(callback: CallbackQuery):
-    await callback.message.answer( 'Вот эти',reply_markup=await kb.inline_keyboard_links())
 
 @dp.message(F.text == "Тестовая кнопка 1")
 async def test_button(message: Message):
@@ -39,8 +41,8 @@ async def help(message: Message):
 
 @dp.message(CommandStart())
 async def start(message: Message):
-    await message.answer(f'да',reply_markup=kb.startkb)
- #  await message.answer(f'Приветики, {message.from_user.first_name}', reply_markup=kb.inline_keyboard_test)
+    await message.answer(f'да-да',reply_markup=kb.startkb)
+ #  await message.answer(f'Приветики, {message.from_user.first_name}', reply_markup=kb.inline_keyboard_links)
 
 async def main():
    await dp.start_polling(bot)
