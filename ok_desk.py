@@ -14,7 +14,7 @@ dp = Dispatcher()
 
 def det_quotes():
     url = f"https://favqs.com/api/qotd"
-    headers = {f'Authorization: Token token={api_key_q}'}
+    # headers = {f'Authorization: Token token={api_key_q}'}
     response = requests.get(url)
     return response.json()
 
@@ -30,10 +30,24 @@ def get_okdesk_case(case):
     #  прописываем формат возврата результата
     return response.json()
 
+@dp.message(Command("list"))
+async def list_command(message: Message):
+    api_key = OK_DESK
+    #  адрес, по которомы мы будем отправлять запрос. Не забываем указывать f строку.
+    url = f"https://service.adv-t.ru/api/v1/issues/list?api_token={api_key}"
+    # created_since=22-03-2022 15:30
+    #  для получения результата нам понадобится модуль requests
+    response = requests.get(url)
+    if response.status_code != 200:
+        await message.answer("ошибка страницы!")
+    else:
+        case_list = response.json()
+        for case in case_list:
+            await message.answer(f"№ {case['id']} тема {case['title']}")
 
 @dp.message(Command("start"))
 async def start_command(message: Message):
-   await message.answer("Привет! Напиши мне номер заявки, и я пришлю тебе её детали.")
+   await message.answer("Привет! Напиши мне номер заявки, и я пришлю тебе её детали.\n /list для получения списка")
 
 @dp.message()
 async def send_case_info(message: Message):
@@ -47,6 +61,7 @@ async def send_case_info(message: Message):
         info = (
                 f"Тема: {case_info['title']}\n"
                 f"Создана {case_info['created_at']}\n"
+                f"Компания {case_info['company']['name']}\n"
                 f"Статус: {case_info['status']['name']}\n"
                 f"Приоритет: {case_info['priority']['name']}\n"
                 f"Исполнители: {names_str}"
