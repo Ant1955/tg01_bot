@@ -42,8 +42,12 @@ async def list_command(message: Message):
         await message.answer("ошибка страницы!")
     else:
         case_list = response.json()
+        info = ""
+        i = 1
         for case in case_list:
-            await message.answer(f"№ {case['id']} тема {case['title']}")
+            info = info + f"{i}№ {case['id']} тема {case['title']}\n"
+            i += 1
+        await message.answer(info)
 
 @dp.message(Command("start"))
 async def start_command(message: Message):
@@ -55,13 +59,14 @@ async def send_case_info(message: Message):
     case = int(message.text)
     case_info = get_okdesk_case(case)
     if case_info and not 'errors' in case_info:
+        print(f"кейс {case} имеет состояние: {case_info}")
         observers = case_info['observers']
         names = [observer['name'] for observer in observers]
         names_str = ', '.join(names)
         info = (
                 f"Тема: {case_info['title']}\n"
                 f"Создана {case_info['created_at']}\n"
-                f"Компания {case_info['company']['name']}\n"
+               # f"Компания {case_info['company']['name']}\n"
                 f"Статус: {case_info['status']['name']}\n"
                 f"Приоритет: {case_info['priority']['name']}\n"
                 f"Исполнители: {names_str}"
